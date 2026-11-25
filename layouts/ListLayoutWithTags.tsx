@@ -6,6 +6,7 @@ import { formatDate } from 'pliny/utils/formatDate'
 import { CoreContent } from 'pliny/utils/contentlayer'
 import type { Blog } from 'contentlayer/generated'
 import Link from '@/components/Link'
+import Image from '@/components/Image'
 import Tag from '@/components/Tag'
 import siteMetadata from '@/data/siteMetadata'
 import tagData from 'app/tag-data.json'
@@ -127,34 +128,54 @@ export default function ListLayoutWithTags({
           <div>
             <ul>
               {displayPosts.map((post) => {
-                const { path, date, title, summary, tags } = post
-                return (
-                  <li key={path} className="py-5">
-                    <article className="flex flex-col space-y-2 xl:space-y-0">
-                      <dl>
-                        <dt className="sr-only">Published on</dt>
-                        <dd className="text-base leading-6 font-medium text-gray-500 dark:text-gray-400">
-                          <time dateTime={date} suppressHydrationWarning>
-                            {formatDate(date, siteMetadata.locale)}
-                          </time>
-                        </dd>
-                      </dl>
-                      <div className="space-y-3">
-                        <div>
-                          <h2 className="text-2xl leading-8 font-bold tracking-tight">
-                            <Link href={`/${path}`} className="text-gray-900 dark:text-gray-100">
-                              {title}
-                            </Link>
-                          </h2>
-                          <div className="flex flex-wrap">
-                            {tags?.map((tag) => <Tag key={tag} text={tag} />)}
-                          </div>
-                        </div>
-                        <div className="prose max-w-none text-gray-500 dark:text-gray-400">
-                          {summary}
+                const { path, date, title, summary, tags, images } = post
+                const thumbnail = Array.isArray(images) ? images[0] : images
+                const details = (
+                  <>
+                    <dl>
+                      <dt className="sr-only">Published on</dt>
+                      <dd className="text-base leading-6 font-medium text-gray-500 dark:text-gray-400">
+                        <time dateTime={date} suppressHydrationWarning>
+                          {formatDate(date, siteMetadata.locale)}
+                        </time>
+                      </dd>
+                    </dl>
+                    <div className="space-y-3">
+                      <div>
+                        <h2 className="text-2xl leading-8 font-bold tracking-tight">
+                          <Link href={`/${path}`} className="text-gray-900 dark:text-gray-100">
+                            {title}
+                          </Link>
+                        </h2>
+                        <div className="flex flex-wrap">
+                          {tags?.map((tag) => <Tag key={tag} text={tag} />)}
                         </div>
                       </div>
-                    </article>
+                      <div className="prose max-w-none text-gray-500 dark:text-gray-400">
+                        {summary}
+                      </div>
+                    </div>
+                  </>
+                )
+                return (
+                  <li key={path} className="py-5">
+                    {thumbnail ? (
+                      <article className="flex items-start gap-4 sm:gap-6">
+                        <Image
+                          src={thumbnail}
+                          alt={title}
+                          width={128}
+                          height={128}
+                          sizes="(min-width: 640px) 128px, 96px"
+                          className="h-24 w-24 shrink-0 rounded-lg object-cover sm:h-32 sm:w-32"
+                        />
+                        <div className="flex min-w-0 flex-1 flex-col space-y-2 xl:space-y-0">
+                          {details}
+                        </div>
+                      </article>
+                    ) : (
+                      <article className="flex flex-col space-y-2 xl:space-y-0">{details}</article>
+                    )}
                   </li>
                 )
               })}

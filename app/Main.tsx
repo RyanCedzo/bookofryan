@@ -1,4 +1,5 @@
 import Link from '@/components/Link'
+import Image from '@/components/Image'
 import Tag from '@/components/Tag'
 import siteMetadata from '@/data/siteMetadata'
 import { formatDate } from 'pliny/utils/formatDate'
@@ -21,11 +22,28 @@ export default function Home({ posts }) {
         <ul className="divide-y divide-gray-200 dark:divide-gray-700">
           {!posts.length && 'No posts found.'}
           {posts.slice(0, MAX_DISPLAY).map((post) => {
-            const { slug, date, title, summary, tags } = post
+            const { slug, date, title, summary, tags, images } = post
+            const thumbnail = Array.isArray(images) ? images[0] : images
             return (
               <li key={slug} className="py-12">
-                <article>
-                  <div className="space-y-2 xl:grid xl:grid-cols-4 xl:items-baseline xl:space-y-0">
+                <article className={thumbnail ? 'flex items-start gap-4 sm:gap-6' : undefined}>
+                  {thumbnail && (
+                    <Image
+                      src={thumbnail}
+                      alt={title}
+                      width={128}
+                      height={128}
+                      sizes="(min-width: 640px) 128px, 96px"
+                      className="h-24 w-24 shrink-0 rounded-lg object-cover sm:h-32 sm:w-32"
+                    />
+                  )}
+                  <div
+                    className={
+                      thumbnail
+                        ? 'min-w-0 flex-1 space-y-2 xl:grid xl:grid-cols-4 xl:items-baseline xl:space-y-0'
+                        : 'space-y-2 xl:grid xl:grid-cols-4 xl:items-baseline xl:space-y-0'
+                    }
+                  >
                     <dl>
                       <dt className="sr-only">Published on</dt>
                       <dd className="text-base leading-6 font-medium text-gray-500 dark:text-gray-400">
